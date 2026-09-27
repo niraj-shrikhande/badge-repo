@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Action_Type__c</fullName>
+    <label>Action Type</label>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Create_Record</fullName><label>Create Record</label><default>false</default></value>
+            <value><fullName>Update_Record</fullName><label>Update Record</label><default>false</default></value>
+            <value><fullName>View_Related_Records</fullName><label>View Related Records</label><default>false</default></value>
+            <value><fullName>View_Documents</fullName><label>View Documents</label><default>false</default></value>
+            <value><fullName>Create_Task</fullName><label>Create Task</label><default>false</default></value>
+            <value><fullName>Create_Event</fullName><label>Create Event</label><default>false</default></value>
+            <value><fullName>Launch_Flow</fullName><label>Launch Flow</label><default>false</default></value>
+            <value><fullName>View_Hierarchy</fullName><label>View Hierarchy</label><default>false</default></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

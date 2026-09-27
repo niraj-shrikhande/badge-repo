@@ -1,0 +1,69 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="standard:account">
+
+        <div slot="actions">
+            <lightning-badge
+                label={sortByLabel}
+                class="slds-m-right_x-small"
+            ></lightning-badge>
+        </div>
+
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+            <!-- Loading state -->
+            <template lwc:if={isLoading}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <lightning-spinner
+                        alternative-text="Loading account relationships..."
+                        size="medium"
+                    ></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Error state -->
+            <template lwc:elseif={error}>
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <lightning-icon
+                        icon-name="utility:error"
+                        size="small"
+                        class="slds-m-right_x-small"
+                    ></lightning-icon>
+                    <span>{error}</span>
+                </div>
+            </template>
+
+            <!-- Empty state -->
+            <template lwc:elseif={isEmpty}>
+                <div class="slds-illustration slds-illustration_small slds-p-around_large" style="text-align:center;">
+                    <lightning-icon
+                        icon-name="utility:connected_apps"
+                        size="large"
+                        class="slds-m-bottom_small"
+                        style="color: var(--lwc-colorTextIconDefault);"
+                    ></lightning-icon>
+                    <p class="slds-text-body_regular slds-text-color_weak slds-m-top_small">
+                        No related accounts found via shared contacts.
+                    </p>
+                </div>
+            </template>
+
+            <!-- Data table -->
+            <template lwc:elseif={hasRelationships}>
+                <lightning-datatable
+                    key-field="accountId"
+                    data={relationships}
+                    columns={columns}
+                    sorted-by={_sortedBy}
+                    sorted-direction={_sortDirection}
+                    onsort={handleSort}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column
+                    resize-column-disabled
+                    class="relationships-table"
+                ></lightning-datatable>
+            </template>
+
+        </div>
+
+    </lightning-card>
+</template>

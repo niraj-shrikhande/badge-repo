@@ -1,0 +1,109 @@
+<template>
+    <lightning-card title={componentTitle} icon-name="utility:flow">
+
+        <!-- Loading -->
+        <template lwc:if={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading process..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Error -->
+        <template lwc:elseif={error}>
+            <div class="slds-p-around_medium">
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <lightning-icon icon-name="utility:error" size="small" class="slds-m-right_x-small"></lightning-icon>
+                    <span>{error}</span>
+                </div>
+            </div>
+        </template>
+
+        <!-- No process configured -->
+        <template lwc:elseif={isEmpty}>
+            <div class="slds-p-around_large" style="text-align:center;">
+                <lightning-icon icon-name="utility:flow" size="large" class="slds-m-bottom_small"></lightning-icon>
+                <p class="slds-text-body_regular slds-text-color_weak slds-m-top_small">
+                    No process is configured for this record.
+                </p>
+            </div>
+        </template>
+
+        <!-- Process loaded -->
+        <template lwc:elseif={hasProcess}>
+            <div class="slds-p-around_medium">
+
+                <!-- Chevron layout using SLDS Path -->
+                <template lwc:if={isChevron}>
+                    <div class="slds-path">
+                        <div class="slds-grid slds-path__track">
+                            <div class="slds-grid slds-path__scroller-container">
+                                <div class="slds-path__scroller">
+                                    <ul class="slds-path__nav slds-path__nav_flyout" role="listbox">
+                                        <template for:each={chevronSteps} for:item="step">
+                                            <li key={step.stepId}
+                                                class={step.chevronClass}
+                                                role="presentation"
+                                                title={step.helpText}>
+                                                <a class="slds-path__link"
+                                                   role="option"
+                                                   data-step-id={step.stepId}
+                                                   onclick={handleStepClick}>
+                                                    <span class="slds-path__stage">
+                                                        <lightning-icon
+                                                            icon-name={step.iconName}
+                                                            size="x-small"
+                                                            class="slds-path__stage-icon">
+                                                        </lightning-icon>
+                                                    </span>
+                                                    <span class="slds-path__title">{step.label}</span>
+                                                </a>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Button layout -->
+                <template lwc:if={isButton}>
+                    <div class="button-steps slds-grid slds-wrap slds-gutters_small">
+                        <template for:each={buttonSteps} for:item="step">
+                            <div key={step.stepId} class="slds-col slds-grow-none slds-m-bottom_x-small">
+                                <lightning-button-icon-stateful
+                                    icon-name={step.iconName}
+                                    selected="false"
+                                    alternative-text={step.label}
+                                    title={step.label}
+                                    class="slds-m-right_xx-small">
+                                </lightning-button-icon-stateful>
+                                <lightning-button
+                                    label={step.label}
+                                    variant="neutral"
+                                    data-step-id={step.stepId}
+                                    onclick={handleStepClick}
+                                    title={step.helpText}>
+                                </lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+            </div>
+        </template>
+
+    </lightning-card>
+
+    <!-- Step action modal -->
+    <template lwc:if={modalOpen}>
+        <c-process-step-modal
+            record-id={recordId}
+            object-api-name={objectApiName}
+            step={activeStep}
+            onclose={handleModalClose}
+            onaction={handleModalAction}>
+        </c-process-step-modal>
+    </template>
+
+</template>

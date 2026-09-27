@@ -1,0 +1,109 @@
+.client-plan-wrapper {
+    background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+    min-height: 100%;
+}
+
+.plan-header {
+    border-left: 4px solid var(--slds-g-color-brand-base-50, #0176d3);
+    padding-left: 1rem;
+}
+
+.data-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.375rem 0;
+    border-bottom: 1px solid var(--slds-g-color-neutral-base-80, #e5e5e5);
+}
+
+.data-row:last-child {
+    border-bottom: none;
+}
+
+.data-label {
+    font-weight: 600;
+    color: var(--slds-g-color-neutral-base-30, #444);
+    font-size: 0.8125rem;
+    min-width: 40%;
+}
+
+.data-value {
+    color: var(--slds-g-color-neutral-base-10, #181818);
+    font-size: 0.8125rem;
+    text-align: right;
+}
+
+.contact-header {
+    display: flex;
+    align-items: center;
+}
+
+.stage-badge {
+    --sds-c-badge-color-background: #e8f4fd;
+    --sds-c-badge-text-color: #0176d3;
+}
+
+.map-container {
+    height: 400px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.map-container lightning-map {
+    height: 400px;
+}
+
+.map-legend {
+    border: 1px solid var(--slds-g-color-neutral-base-80, #e5e5e5);
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    min-width: 140px;
+}
+
+.growth-icon {
+    --sds-c-icon-color-foreground-default: #2e7d32;
+}
+
+.location-card-inner {
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--slds-g-color-neutral-base-80, #e5e5e5);
+    background: #fff;
+    height: 100%;
+    transition: box-shadow 0.15s ease;
+}
+
+.location-card-inner:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.location-header {
+    min-height: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.location-name {
+    font-weight: 600;
+    margin-bottom: 0.125rem;
+}
+
+.hq-badge {
+    --sds-c-badge-color-background: #0176d3;
+    --sds-c-badge-text-color: #ffffff;
+}
+
+.growth-badge {
+    --sds-c-badge-color-background: #e8f5e9;
+    --sds-c-badge-text-color: #2e7d32;
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>Account</object>
+            </objects>
+            <property
+                name="maxItems"
+                type="Integer"
+                label="Max Items Shown"
+                description="Maximum number of related accounts to display (1–50)."
+                default="10"
+                min="1"
+                max="50"
+            />
+            <property
+                name="sortBy"
+                type="String"
+                label="Sort By"
+                description="Sort the list by Account Name or by number of shared contacts."
+                default="contactCount"
+                datasource="contactCount,name"
+            />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

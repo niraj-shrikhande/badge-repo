@@ -1,0 +1,286 @@
+<template>
+    <template lwc:if={isLoading}>
+        <lightning-spinner alternative-text="Loading Client Plan..." size="medium"></lightning-spinner>
+    </template>
+
+    <template lwc:elseif={error}>
+        <div class="slds-notify slds-notify_alert slds-alert_error slds-m-around_medium" role="alert">
+            <span>Unable to load Client Plan data. Please refresh the page.</span>
+        </div>
+    </template>
+
+    <template lwc:elseif={clientData}>
+        <div class="client-plan-wrapper slds-p-around_medium">
+
+            <!-- Header -->
+            <div class="plan-header slds-m-bottom_medium">
+                <h1 class="slds-text-heading_large slds-text-color_default">{clientData.account.Name}</h1>
+                <p class="slds-text-body_small slds-text-color_weak">Client Plan &bull; Account Owner: {clientData.account.Owner.Name}</p>
+            </div>
+
+            <div class="slds-grid slds-wrap slds-gutters">
+
+                <!-- Section 1: Account Data Points -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-m-bottom_medium">
+                    <lightning-card title="Account Overview" icon-name="standard:account">
+                        <div class="slds-p-around_medium">
+                            <dl class="data-list">
+                                <template lwc:if={clientData.account.Industry}>
+                                    <div class="data-row">
+                                        <dt class="data-label">Industry</dt>
+                                        <dd class="data-value">{clientData.account.Industry}</dd>
+                                    </div>
+                                </template>
+                                <template lwc:if={clientData.account.Type}>
+                                    <div class="data-row">
+                                        <dt class="data-label">Type</dt>
+                                        <dd class="data-value">{clientData.account.Type}</dd>
+                                    </div>
+                                </template>
+                                <template lwc:if={clientData.account.Phone}>
+                                    <div class="data-row">
+                                        <dt class="data-label">Phone</dt>
+                                        <dd class="data-value">
+                                            <a href={accountPhoneHref}>{clientData.account.Phone}</a>
+                                        </dd>
+                                    </div>
+                                </template>
+                                <template lwc:if={clientData.account.Website}>
+                                    <div class="data-row">
+                                        <dt class="data-label">Website</dt>
+                                        <dd class="data-value">
+                                            <a href={clientData.account.Website} target="_blank" rel="noopener">{clientData.account.Website}</a>
+                                        </dd>
+                                    </div>
+                                </template>
+                                <template lwc:if={clientData.account.NumberOfEmployees}>
+                                    <div class="data-row">
+                                        <dt class="data-label">Employees</dt>
+                                        <dd class="data-value">{clientData.account.NumberOfEmployees}</dd>
+                                    </div>
+                                </template>
+                                <template lwc:if={clientData.account.AnnualRevenue}>
+                                    <div class="data-row">
+                                        <dt class="data-label">Annual Revenue</dt>
+                                        <dd class="data-value">{formattedAnnualRevenue}</dd>
+                                    </div>
+                                </template>
+                                <template lwc:if={billingAddress}>
+                                    <div class="data-row">
+                                        <dt class="data-label">Billing Address</dt>
+                                        <dd class="data-value">{billingAddress}</dd>
+                                    </div>
+                                </template>
+                            </dl>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Section 2: Primary Contact -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-m-bottom_medium">
+                    <lightning-card title="Primary Contact" icon-name="standard:contact">
+                        <div class="slds-p-around_medium">
+                            <template lwc:if={clientData.primaryContact}>
+                                <div class="contact-header slds-m-bottom_small">
+                                    <lightning-icon icon-name="standard:avatar" size="large" class="slds-m-right_small"></lightning-icon>
+                                    <div>
+                                        <p class="slds-text-heading_small">{clientData.primaryContact.FirstName} {clientData.primaryContact.LastName}</p>
+                                        <p class="slds-text-body_small slds-text-color_weak">{clientData.primaryContact.Title}</p>
+                                    </div>
+                                </div>
+                                <dl class="data-list">
+                                    <template lwc:if={clientData.primaryContact.Email}>
+                                        <div class="data-row">
+                                            <dt class="data-label">Email</dt>
+                                            <dd class="data-value">
+                                                <a href={contactEmailHref}>{clientData.primaryContact.Email}</a>
+                                            </dd>
+                                        </div>
+                                    </template>
+                                    <template lwc:if={clientData.primaryContact.Phone}>
+                                        <div class="data-row">
+                                            <dt class="data-label">Phone</dt>
+                                            <dd class="data-value">
+                                                <a href={contactPhoneHref}>{clientData.primaryContact.Phone}</a>
+                                            </dd>
+                                        </div>
+                                    </template>
+                                    <template lwc:if={clientData.primaryContact.MobilePhone}>
+                                        <div class="data-row">
+                                            <dt class="data-label">Mobile</dt>
+                                            <dd class="data-value">
+                                                <a href={contactMobileHref}>{clientData.primaryContact.MobilePhone}</a>
+                                            </dd>
+                                        </div>
+                                    </template>
+                                </dl>
+                            </template>
+                            <template lwc:else>
+                                <p class="slds-text-color_weak slds-text-body_small">No contact records found for this account.</p>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Section 3: Opportunity Pipeline -->
+                <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+                    <lightning-card title="Opportunity Pipeline" icon-name="standard:opportunity">
+                        <div slot="actions">
+                            <span class="slds-badge slds-badge_lightest">
+                                {clientData.openOpportunityCount} Open &bull; {formattedPipelineTotal}
+                            </span>
+                        </div>
+                        <div class="slds-p-around_medium">
+                            <template lwc:if={hasOpportunities}>
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col"><div class="slds-truncate">Opportunity</div></th>
+                                            <th scope="col"><div class="slds-truncate">Stage</div></th>
+                                            <th scope="col"><div class="slds-truncate">Amount</div></th>
+                                            <th scope="col"><div class="slds-truncate">Close Date</div></th>
+                                            <th scope="col"><div class="slds-truncate">Probability</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={clientData.opportunities} for:item="opp">
+                                            <tr key={opp.Id}>
+                                                <td>
+                                                    <lightning-formatted-url value={opp.Id} label={opp.Name} target="_self"></lightning-formatted-url>
+                                                </td>
+                                                <td>
+                                                    <lightning-badge label={opp.StageName} class="stage-badge"></lightning-badge>
+                                                </td>
+                                                <td>
+                                                    <lightning-formatted-number value={opp.Amount} format-style="currency" currency-code="USD"></lightning-formatted-number>
+                                                </td>
+                                                <td>
+                                                    <lightning-formatted-date-time value={opp.CloseDate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                                </td>
+                                                <td>{opp.Probability}%</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </template>
+                            <template lwc:else>
+                                <p class="slds-text-color_weak slds-text-body_small">No open opportunities found.</p>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Section 3b: Global Presence Map -->
+                <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+                    <lightning-card title="Global Presence" icon-name="utility:world">
+                        <div slot="actions">
+                            <span class="slds-badge slds-badge_lightest slds-m-right_x-small">
+                                {clientData.globalPresence.length} Locations
+                            </span>
+                            <span class="slds-badge growth-badge">
+                                {clientData.growthMarketCount} Growth Markets
+                            </span>
+                        </div>
+                        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+                            <template lwc:if={hasGlobalPresence}>
+                                <!-- Map -->
+                                <div class="map-container slds-m-bottom_medium">
+                                    <lightning-map
+                                        map-markers={mapMarkers}
+                                        zoom-level="2"
+                                        markers-title="Bedrock Global Offices"
+                                        show-footer>
+                                    </lightning-map>
+                                </div>
+                                <!-- Legend -->
+                                <div class="map-legend slds-grid slds-wrap slds-gutters_small slds-m-bottom_medium">
+                                    <div class="slds-col legend-item">
+                                        <lightning-icon icon-name="utility:company" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                                        <span class="slds-text-body_small">Corporate HQ</span>
+                                    </div>
+                                    <div class="slds-col legend-item">
+                                        <lightning-icon icon-name="utility:trending_up" size="x-small" class="slds-m-right_xx-small growth-icon"></lightning-icon>
+                                        <span class="slds-text-body_small">Growth Market</span>
+                                    </div>
+                                    <div class="slds-col legend-item">
+                                        <lightning-icon icon-name="utility:location" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                                        <span class="slds-text-body_small">Regional Office</span>
+                                    </div>
+                                </div>
+                                <!-- Location cards -->
+                                <div class="slds-grid slds-wrap slds-gutters_small">
+                                    <template for:each={clientData.globalPresence} for:item="loc">
+                                        <div key={loc.name} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-m-bottom_small">
+                                            <div class={loc.cardClass}>
+                                                <div class="location-card-inner">
+                                                    <div class="location-header">
+                                                        <template lwc:if={loc.isHQ}>
+                                                            <span class="slds-badge hq-badge slds-m-bottom_xx-small">HQ</span>
+                                                        </template>
+                                                        <template lwc:elseif={loc.isGrowthMarket}>
+                                                            <span class="slds-badge growth-badge slds-m-bottom_xx-small">Growth Market</span>
+                                                        </template>
+                                                    </div>
+                                                    <p class="slds-text-body_regular slds-text-color_default location-name">{loc.name}</p>
+                                                    <p class="slds-text-body_small slds-text-color_weak">{loc.city}, {loc.country}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template lwc:else>
+                                <p class="slds-text-color_weak slds-text-body_small">No subsidiary locations found.</p>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Section 4: Service Entitlements -->
+                <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+                    <lightning-card title="Service Entitlements" icon-name="standard:entitlement">
+                        <div slot="actions">
+                            <span class="slds-badge slds-badge_lightest">
+                                {clientData.activeEntitlementCount} Active
+                            </span>
+                        </div>
+                        <div class="slds-p-around_medium">
+                            <template lwc:if={hasEntitlements}>
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col"><div class="slds-truncate">Entitlement</div></th>
+                                            <th scope="col"><div class="slds-truncate">Type</div></th>
+                                            <th scope="col"><div class="slds-truncate">Asset</div></th>
+                                            <th scope="col"><div class="slds-truncate">Start Date</div></th>
+                                            <th scope="col"><div class="slds-truncate">End Date</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={clientData.entitlements} for:item="ent">
+                                            <tr key={ent.Id}>
+                                                <td>{ent.Name}</td>
+                                                <td>{ent.Type}</td>
+                                                <td>{ent.Asset.Name}</td>
+                                                <td>
+                                                    <lightning-formatted-date-time value={ent.StartDate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                                </td>
+                                                <td>
+                                                    <lightning-formatted-date-time value={ent.EndDate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </template>
+                            <template lwc:else>
+                                <p class="slds-text-color_weak slds-text-body_small">No active entitlements found.</p>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+    </template>
+</template>

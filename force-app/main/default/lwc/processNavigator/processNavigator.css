@@ -1,0 +1,12 @@
+.slds-path__item {
+    cursor: pointer;
+}
+
+.slds-path__link:hover .slds-path__title {
+    text-decoration: underline;
+}
+
+.button-steps .slds-col {
+    display: flex;
+    align-items: center;
+}

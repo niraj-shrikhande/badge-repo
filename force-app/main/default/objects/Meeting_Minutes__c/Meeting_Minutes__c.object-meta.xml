@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Stores notes and minutes from advisor-client meetings for AI-driven summarization.</description>
+    <label>Meeting Minutes</label>
+    <nameField>
+        <label>Meeting Minutes Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Meeting Minutes</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>
