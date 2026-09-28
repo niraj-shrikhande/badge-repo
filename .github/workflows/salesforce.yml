@@ -1,0 +1,68 @@
+name: Deploy to DEVINT
+
+on:
+  pull_request:
+    branches: [dev]
+    paths: ['force-app/**']
+  push:
+    branches: [dev]
+    paths: ['force-app/**']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'push' && 'production' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed for delta
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Salesforce CLI + delta plugin
+        run: |
+          npm install -g @salesforce/cli
+          echo y | sf plugins install sfdx-git-delta
+
+      - name: Authenticate to org (JWT)
+        run: |
+          echo "${{ secrets.SF_JWT_KEY }}" > server.key
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CONSUMER_KEY }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME }}" \
+            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
+            --alias target
+          rm server.key
+
+      - name: Build delta package
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FROM="origin/${{ github.base_ref }}"
+          else
+            FROM="${{ github.event.before }}"
+          fi
+          mkdir -p delta
+          sf sgd source delta --from "$FROM" --to HEAD --output-dir delta --source-dir force-app
+          echo "--- package.xml ---"; cat delta/package/package.xml
+
+      - name: Validate (PR) or Deploy (merge)
+        run: |
+          if ! grep -q '<types>' delta/package/package.xml && \
+             ! grep -q '<types>' delta/destructiveChanges/destructiveChanges.xml; then
+            echo "No metadata changes to deploy."; exit 0
+          fi
+
+          ARGS=(--manifest delta/package/package.xml
+                --post-destructive-changes delta/destructiveChanges/destructiveChanges.xml
+                --target-org target
+                --test-level RunLocalTests
+                --wait 90)
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            sf project deploy start "${ARGS[@]}" --dry-run
+          else
+            sf project deploy start "${ARGS[@]}"
+          fi
