@@ -1,3 +1,4 @@
+// This is Relationships controller which contains methods for displaying Account relationships
 public with sharing class AccountRelationshipsController {
 
     public class AccountRelationshipWrapper {
