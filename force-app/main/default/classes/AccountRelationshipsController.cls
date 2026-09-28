@@ -1,5 +1,5 @@
 // This is Relationships controller which contains methods for displaying Account relationships component 
-// 9/28/2026
+// 9/28/2026 v1. Added test coverage
 public with sharing class AccountRelationshipsController {
 
     public class AccountRelationshipWrapper {
