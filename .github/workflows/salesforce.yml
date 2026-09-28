@@ -26,16 +26,12 @@ jobs:
           npm install -g @salesforce/cli
           echo y | sf plugins install sfdx-git-delta
 
-      - name: Authenticate to org (JWT)
-        run: |
-          echo "${{ secrets.SF_JWT_KEY }}" > server.key
-          sf org login jwt \
-            --client-id "${{ secrets.SF_CONSUMER_KEY }}" \
-            --jwt-key-file server.key \
-            --username "${{ secrets.SF_USERNAME }}" \
-            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
-            --alias target
-          rm server.key
+      -  name: Log in to target org
+         run: |
+          echo "${{ secrets.SF_AUTH_URL }}" > authurl.txt
+          sf org login sfdx-url --sfdx-url-file authurl.txt --alias target
+          rm authurl.txt
+          sf org display --target-org target  
 
       - name: Build delta package
         run: |
